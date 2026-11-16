@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "953068336105",
+    "project_id": "elective-4-final-exam",
+    "storage_bucket": "elective-4-final-exam.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:953068336105:android:9b69f1946de88153d35178",
+        "android_client_info": {
+          "package_name": "com.example.mobile_app_dev_2"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEK9Q4vlRlUoz8jHuV-XLDbYxm5kXQukc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
