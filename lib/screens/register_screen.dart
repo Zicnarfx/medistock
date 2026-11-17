@@ -1,6 +1,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../app_colors.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -41,52 +43,45 @@ class _RegisterScreenState extends State<RegisterScreen> {
         elevation: 0,
         title: const Text(
           'Create Account',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
           child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxWidth: 450,
-            ),
+            constraints: const BoxConstraints(maxWidth: 450),
             child: Column(
               children: [
                 // Logo
                 Container(
-  height: 100,
-  width: 100,
-  decoration: BoxDecoration(
-    shape: BoxShape.circle,
-    gradient: const LinearGradient(
-      colors: [
-        darkGreen,
-        primaryGreen,
-      ],
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
-    ),
-    boxShadow: [
-      BoxShadow(
-        color: darkGreen.withValues(alpha: 0.25),
-        blurRadius: 15,
-        offset: const Offset(0, 6),
-      ),
-    ],
-    border: Border.all(
-      color: lightGreen.withValues(alpha: 0.5),
-      width: 2,
-    ),
-  ),
-  child: const Icon(
-    Icons.medical_services_rounded,
-    color: Colors.white,
-    size: 48,
-  ),
-),
+                  height: 100,
+                  width: 100,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: const LinearGradient(
+                      colors: [darkGreen, primaryGreen],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: darkGreen.withValues(alpha: 0.25),
+                        blurRadius: 15,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                    border: Border.all(
+                      color: lightGreen.withValues(alpha: 0.5),
+                      width: 2,
+                    ),
+                  ),
+                  child: const Icon(
+                    Icons.medical_services_rounded,
+                    color: Colors.white,
+                    size: 48,
+                  ),
+                ),
 
                 const SizedBox(height: 15),
 
@@ -159,8 +154,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           label: 'Full Name',
                           icon: Icons.person_outline,
                           validator: (value) {
-                            if (value == null ||
-                                value.trim().isEmpty) {
+                            if (value == null || value.trim().isEmpty) {
                               return 'Please enter your full name.';
                             }
                             return null;
@@ -176,8 +170,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           icon: Icons.email_outlined,
                           keyboardType: TextInputType.emailAddress,
                           validator: (value) {
-                            if (value == null ||
-                                value.trim().isEmpty) {
+                            if (value == null || value.trim().isEmpty) {
                               return 'Please enter your email.';
                             }
 
@@ -373,10 +366,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           color: lightGreen,
           fontSize: 13,
         ),
-        prefixIcon: Icon(
-          icon,
-          color: lightGreen,
-        ),
+        prefixIcon: Icon(icon, color: lightGreen),
         suffixIcon: suffixIcon,
         filled: true,
         fillColor: appBarGreen,
@@ -384,9 +374,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           horizontal: 15,
           vertical: 17,
         ),
-        errorStyle: const TextStyle(
-          color: Colors.redAccent,
-        ),
+        errorStyle: const TextStyle(color: Colors.redAccent),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(13),
           borderSide: BorderSide(
@@ -402,9 +390,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(13),
-          borderSide: const BorderSide(
-            color: Colors.redAccent,
-          ),
+          borderSide: const BorderSide(color: Colors.redAccent),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(13),
@@ -430,17 +416,37 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
 
     try {
+      final name = nameController.text.trim();
+      final email = emailController.text.trim();
+
+      // 1. Create account in Firebase Authentication
       final credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(
-        email: emailController.text.trim(),
+        email: email,
         password: passwordController.text,
       );
 
-      await credential.user?.updateDisplayName(
-        nameController.text.trim(),
-      );
+      final user = credential.user;
 
-      // Sign out so the user can log in manually
+      if (user == null) {
+        throw Exception('Unable to create user account.');
+      }
+
+      // 2. Save the user's name in Firebase Authentication profile
+      await user.updateDisplayName(name);
+
+      // 3. Save user information in Cloud Firestore
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .set({
+        'uid': user.uid,
+        'fullName': name,
+        'email': email,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      // 4. Sign out so the user can log in manually
       await FirebaseAuth.instance.signOut();
 
       if (!mounted) return;
@@ -507,9 +513,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   },
                   child: const Text(
                     'OK',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -522,7 +526,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       // Return to Login Screen
       Navigator.pop(context);
-
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
 
@@ -548,7 +551,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         icon: Icons.error_outline,
         iconColor: Colors.redAccent,
       );
-
     } catch (e) {
       if (!mounted) return;
 
@@ -558,7 +560,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       await showMessage(
         title: 'Something Went Wrong',
-        message: 'Unable to create your account. Please try again.',
+        message: 'Unable to save your account information. '
+            'Please check your Firestore rules and try again. '
+            'If the account already appears in Authentication, '
+            'it may have been created even though saving its profile failed.',
         icon: Icons.error_outline,
         iconColor: Colors.redAccent,
       );

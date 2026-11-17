@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+
 import '../app_colors.dart';
 import '../models/medicine.dart';
 import '../services/medicine_services.dart';
@@ -286,38 +287,43 @@ class _MedicineFormScreenState extends State<MedicineFormScreen> {
                       color: primaryGreen.withValues(alpha: 0.5),
                     ),
                   ),
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 5,
-                    ),
-                    leading: const Icon(
-                      Icons.calendar_month,
-                      color: lightGreen,
-                      size: 25,
-                    ),
-                    title: const Text(
-                      'Expiration Date',
-                      style: TextStyle(
+                  child: Material(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(14),
+                    clipBehavior: Clip.antiAlias,
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 5,
+                      ),
+                      leading: const Icon(
+                        Icons.calendar_month,
                         color: lightGreen,
-                        fontSize: 12,
+                        size: 25,
                       ),
-                    ),
-                    subtitle: Text(
-                      '${expirationDate.day}/'
-                      '${expirationDate.month}/'
-                      '${expirationDate.year}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
+                      title: const Text(
+                        'Expiration Date',
+                        style: TextStyle(
+                          color: lightGreen,
+                          fontSize: 12,
+                        ),
                       ),
+                      subtitle: Text(
+                        '${expirationDate.day}/'
+                        '${expirationDate.month}/'
+                        '${expirationDate.year}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                        ),
+                      ),
+                      trailing: const Icon(
+                        Icons.edit_calendar,
+                        color: lightGreen,
+                      ),
+                      onTap: selectExpirationDate,
                     ),
-                    trailing: const Icon(
-                      Icons.edit_calendar,
-                      color: lightGreen,
-                    ),
-                    onTap: selectExpirationDate,
                   ),
                 ),
 
@@ -861,7 +867,6 @@ class _MedicineFormScreenState extends State<MedicineFormScreen> {
 
       // Return to Medicine List
       Navigator.pop(context, true);
-
     } catch (e) {
       if (!mounted) return;
 

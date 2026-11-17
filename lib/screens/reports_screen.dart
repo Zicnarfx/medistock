@@ -14,7 +14,6 @@ class ReportsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: backgroundGreen,
-
       appBar: AppBar(
         backgroundColor: appBarGreen,
         foregroundColor: Colors.white,
@@ -24,7 +23,6 @@ class ReportsScreen extends StatelessWidget {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
-
       body: StreamBuilder<List<Medicine>>(
         stream: service.getMedicines(),
         builder: (context, snapshot) {
@@ -69,9 +67,11 @@ class ReportsScreen extends StatelessWidget {
               .toList();
 
           final expiringSoon = medicines
-              .where((m) =>
-                  !m.expirationDate.isBefore(now) &&
-                  !m.expirationDate.isAfter(soon))
+              .where(
+                (m) =>
+                    !m.expirationDate.isBefore(now) &&
+                    !m.expirationDate.isAfter(soon),
+              )
               .toList();
 
           final Map<String, int> categories = {};
@@ -243,35 +243,40 @@ class ReportsScreen extends StatelessWidget {
                       color: primaryGreen.withValues(alpha: 0.3),
                     ),
                   ),
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 5,
-                    ),
-                    leading: Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: primaryGreen.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(12),
+                  child: Material(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(15),
+                    clipBehavior: Clip.antiAlias,
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 5,
                       ),
-                      child: const Icon(
-                        Icons.category_outlined,
-                        color: lightGreen,
+                      leading: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: primaryGreen.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(
+                          Icons.category_outlined,
+                          color: lightGreen,
+                        ),
                       ),
-                    ),
-                    title: Text(
-                      entry.key,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
+                      title: Text(
+                        entry.key,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ),
-                    trailing: Text(
-                      '${entry.value} medicines',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: lightGreen,
-                        fontSize: 12,
+                      trailing: Text(
+                        '${entry.value} medicines',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: lightGreen,
+                          fontSize: 12,
+                        ),
                       ),
                     ),
                   ),
@@ -336,33 +341,38 @@ class ReportsScreen extends StatelessWidget {
           color: primaryGreen.withValues(alpha: 0.3),
         ),
       ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(16),
-        leading: Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: primaryGreen.withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(13),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(16),
+        clipBehavior: Clip.antiAlias,
+        child: ListTile(
+          contentPadding: const EdgeInsets.all(16),
+          leading: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: primaryGreen.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(13),
+            ),
+            child: Icon(
+              icon,
+              color: lightGreen,
+              size: 26,
+            ),
           ),
-          child: Icon(
-            icon,
-            color: lightGreen,
-            size: 26,
+          title: Text(
+            title,
+            style: const TextStyle(
+              color: Colors.white70,
+              fontSize: 13,
+            ),
           ),
-        ),
-        title: Text(
-          title,
-          style: const TextStyle(
-            color: Colors.white70,
-            fontSize: 13,
-          ),
-        ),
-        subtitle: Text(
-          value,
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: lightGreen,
+          subtitle: Text(
+            value,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: lightGreen,
+            ),
           ),
         ),
       ),
@@ -386,38 +396,43 @@ class ReportsScreen extends StatelessWidget {
           color: color.withValues(alpha: 0.25),
         ),
       ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 5,
-        ),
-        leading: Icon(
-          icon,
-          color: color,
-          size: 28,
-        ),
-        title: Text(
-          title,
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w500,
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(15),
+        clipBehavior: Clip.antiAlias,
+        child: ListTile(
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 5,
           ),
-        ),
-        trailing: Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 15,
-            vertical: 8,
+          leading: Icon(
+            icon,
+            color: color,
+            size: 28,
           ),
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(20),
+          title: Text(
+            title,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w500,
+            ),
           ),
-          child: Text(
-            '$count',
-            style: TextStyle(
-              color: color,
-              fontWeight: FontWeight.bold,
-              fontSize: 15,
+          trailing: Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 15,
+              vertical: 8,
+            ),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              '$count',
+              style: TextStyle(
+                color: color,
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+              ),
             ),
           ),
         ),

@@ -203,37 +203,37 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               children: [
                 // LOGO
-              Container(
-  height: 100,
-  width: 100,
-  decoration: BoxDecoration(
-    shape: BoxShape.circle,
-    gradient: const LinearGradient(
-      colors: [
-        darkGreen,
-        primaryGreen,
-      ],
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
-    ),
-    boxShadow: [
-      BoxShadow(
-        color: darkGreen.withValues(alpha: 0.25),
-        blurRadius: 15,
-        offset: const Offset(0, 6),
-      ),
-    ],
-    border: Border.all(
-      color: lightGreen.withValues(alpha: 0.5),
-      width: 2,
-    ),
-  ),
-  child: const Icon(
-    Icons.medical_services_rounded,
-    color: Colors.white,
-    size: 48,
-  ),
-),
+                Container(
+                  height: 100,
+                  width: 100,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: const LinearGradient(
+                      colors: [
+                        darkGreen,
+                        primaryGreen,
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: darkGreen.withValues(alpha: 0.25),
+                        blurRadius: 15,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                    border: Border.all(
+                      color: lightGreen.withValues(alpha: 0.5),
+                      width: 2,
+                    ),
+                  ),
+                  child: const Icon(
+                    Icons.medical_services_rounded,
+                    color: Colors.white,
+                    size: 48,
+                  ),
+                ),
 
                 const SizedBox(height: 20),
 
@@ -421,25 +421,30 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
 
                       // REMEMBER ME
-                      CheckboxListTile(
-                        contentPadding: EdgeInsets.zero,
-                        controlAffinity:
-                            ListTileControlAffinity.leading,
-                        activeColor: primaryGreen,
-                        checkColor: Colors.white,
-                        title: const Text(
-                          'Remember Me',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.white70,
+                      // FIX: MATERIAL ANCESTOR FOR CHECKBOXLISTTILE
+                      Material(
+                        color: Colors.transparent,
+                        borderRadius: BorderRadius.circular(10),
+                        child: CheckboxListTile(
+                          contentPadding: EdgeInsets.zero,
+                          controlAffinity:
+                              ListTileControlAffinity.leading,
+                          activeColor: primaryGreen,
+                          checkColor: Colors.white,
+                          title: const Text(
+                            'Remember Me',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white70,
+                            ),
                           ),
+                          value: rememberMe,
+                          onChanged: (value) {
+                            setState(() {
+                              rememberMe = value ?? false;
+                            });
+                          },
                         ),
-                        value: rememberMe,
-                        onChanged: (value) {
-                          setState(() {
-                            rememberMe = value ?? false;
-                          });
-                        },
                       ),
 
                       const SizedBox(height: 15),

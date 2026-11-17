@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+
 import '../app_colors.dart';
 import '../models/medicine.dart';
 
@@ -46,12 +47,9 @@ class _MedicineCardState extends State<MedicineCard> {
     final medicine = widget.medicine;
 
     return MouseRegion(
-      onEnter: (_) {
-        setState(() => isHovered = true);
-      },
-      onExit: (_) {
-        setState(() => isHovered = false);
-      },
+      onEnter: (_) => setState(() => isHovered = true),
+      onExit: (_) => setState(() => isHovered = false),
+
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeInOut,
@@ -72,6 +70,7 @@ class _MedicineCardState extends State<MedicineCard> {
             ),
           ],
         ),
+
         child: Card(
           color: cardGreen,
           elevation: 0,
@@ -89,194 +88,276 @@ class _MedicineCardState extends State<MedicineCard> {
             ),
           ),
           clipBehavior: Clip.antiAlias,
+
           child: InkWell(
             borderRadius: BorderRadius.circular(18),
             onTap: widget.onTap,
             splashColor: lightGreen.withValues(alpha: 0.08),
-            child: Padding(
-              padding: const EdgeInsets.all(17),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Medicine name and status
-                  Row(
+
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+
+                // Automatically adjust spacing for smaller grid cards.
+                final compact = constraints.maxHeight.isFinite &&
+                    constraints.maxHeight < 280;
+
+                final padding = compact ? 10.0 : 17.0;
+                final smallGap = compact ? 5.0 : 9.0;
+                final sectionGap = compact ? 8.0 : 15.0;
+
+                return Padding(
+                  padding: EdgeInsets.all(padding),
+
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+
                     children: [
-                      Expanded(
-                        child: Text(
-                          medicine.name,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+
+                      // MEDICINE NAME AND STATUS
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              medicine.name,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: compact ? 15 : 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 11,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: statusColor.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: statusColor.withValues(alpha: 0.5),
+
+                          SizedBox(width: compact ? 4 : 8),
+
+                          Flexible(
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: compact ? 6 : 11,
+                                vertical: compact ? 4 : 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: statusColor.withValues(
+                                  alpha: 0.15,
+                                ),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: statusColor.withValues(
+                                    alpha: 0.5,
+                                  ),
+                                ),
+                              ),
+                              child: Text(
+                                statusText,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: statusColor,
+                                  fontSize: compact ? 9 : 11,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
-                        child: Text(
-                          statusText,
-                          style: TextStyle(
-                            color: statusColor,
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
+                        ],
+                      ),
+
+                      SizedBox(height: smallGap),
+
+                      // CATEGORY
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.category_outlined,
+                            color: lightGreen,
+                            size: compact ? 14 : 17,
                           ),
-                        ),
-                      ),
-                    ],
-                  ),
+                          const SizedBox(width: 7),
 
-                  const SizedBox(height: 9),
-
-                  // Category
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.category_outlined,
-                        color: lightGreen,
-                        size: 17,
-                      ),
-                      const SizedBox(width: 7),
-                      Expanded(
-                        child: Text(
-                          medicine.category,
-                          style: const TextStyle(
-                            color: Colors.white70,
-                            fontSize: 13,
+                          Expanded(
+                            child: Text(
+                              medicine.category,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: compact ? 11 : 13,
+                              ),
+                            ),
                           ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                        ],
                       ),
-                    ],
-                  ),
 
-                  const SizedBox(height: 16),
+                      SizedBox(height: sectionGap),
 
-                  Divider(
-                    color: lightGreen.withValues(alpha: 0.2),
-                    height: 1,
-                  ),
-
-                  const SizedBox(height: 15),
-
-                  // Stock and price
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.inventory_2_outlined,
-                        size: 19,
-                        color: lightGreen,
+                      Divider(
+                        color: lightGreen.withValues(alpha: 0.2),
+                        height: 1,
                       ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'Stock: ${medicine.quantity} ${medicine.unit}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 13,
+
+                      SizedBox(height: compact ? 8 : 15),
+
+                      // STOCK AND PRICE
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.inventory_2_outlined,
+                            size: compact ? 16 : 19,
+                            color: lightGreen,
                           ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      const Icon(
-                        Icons.payments_outlined,
-                        size: 19,
-                        color: lightGreen,
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        '₱${medicine.price.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: lightGreen,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
 
-                  const SizedBox(height: 13),
+                          const SizedBox(width: 6),
 
-                  // Expiration date
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.calendar_month_outlined,
-                        size: 18,
-                        color: isExpired
-                            ? Colors.redAccent
-                            : lightGreen,
+                          Expanded(
+                            child: Text(
+                              'Stock: ${medicine.quantity} ${medicine.unit}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500,
+                                fontSize: compact ? 11 : 13,
+                              ),
+                            ),
+                          ),
+
+                          Icon(
+                            Icons.payments_outlined,
+                            size: compact ? 16 : 19,
+                            color: lightGreen,
+                          ),
+
+                          const SizedBox(width: 5),
+
+                          Flexible(
+                            child: Text(
+                              '₱${medicine.price.toStringAsFixed(2)}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: lightGreen,
+                                fontSize: compact ? 11 : 14,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'Expires: ${medicine.expirationDate.day}/${medicine.expirationDate.month}/${medicine.expirationDate.year}',
-                          style: TextStyle(
-                            fontSize: 13,
+
+                      SizedBox(height: compact ? 7 : 13),
+
+                      // EXPIRATION DATE
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.calendar_month_outlined,
+                            size: compact ? 15 : 18,
                             color: isExpired
                                 ? Colors.redAccent
-                                : Colors.white70,
+                                : lightGreen,
                           ),
-                        ),
+
+                          const SizedBox(width: 7),
+
+                          Expanded(
+                            child: Text(
+                              'Expires: ${medicine.expirationDate.day}/${medicine.expirationDate.month}/${medicine.expirationDate.year}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: compact ? 11 : 13,
+                                color: isExpired
+                                    ? Colors.redAccent
+                                    : Colors.white70,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      SizedBox(height: compact ? 6 : 12),
+
+                      Divider(
+                        color: lightGreen.withValues(alpha: 0.2),
+                        height: 1,
+                      ),
+
+                      SizedBox(height: compact ? 2 : 5),
+
+                      // EDIT AND DELETE BUTTONS
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+
+                          if (widget.onEdit != null)
+                            TextButton.icon(
+                              onPressed: widget.onEdit,
+                              icon: Icon(
+                                Icons.edit_outlined,
+                                size: compact ? 15 : 18,
+                              ),
+                              label: Text(
+                                'Edit',
+                                style: TextStyle(
+                                  fontSize: compact ? 11 : 14,
+                                ),
+                              ),
+                              style: TextButton.styleFrom(
+                                foregroundColor: lightGreen,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: compact ? 5 : 10,
+                                  vertical: compact ? 2 : 8,
+                                ),
+                                minimumSize: Size(
+                                  0,
+                                  compact ? 30 : 40,
+                                ),
+                                tapTargetSize:
+                                    MaterialTapTargetSize.shrinkWrap,
+                                visualDensity: compact
+                                    ? VisualDensity.compact
+                                    : VisualDensity.standard,
+                              ),
+                            ),
+
+                          if (widget.onDelete != null)
+                            TextButton.icon(
+                              onPressed: widget.onDelete,
+                              icon: Icon(
+                                Icons.delete_outline,
+                                size: compact ? 15 : 18,
+                              ),
+                              label: Text(
+                                'Delete',
+                                style: TextStyle(
+                                  fontSize: compact ? 11 : 14,
+                                ),
+                              ),
+                              style: TextButton.styleFrom(
+                                foregroundColor: Colors.redAccent,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: compact ? 5 : 10,
+                                  vertical: compact ? 2 : 8,
+                                ),
+                                minimumSize: Size(
+                                  0,
+                                  compact ? 30 : 40,
+                                ),
+                                tapTargetSize:
+                                    MaterialTapTargetSize.shrinkWrap,
+                                visualDensity: compact
+                                    ? VisualDensity.compact
+                                    : VisualDensity.standard,
+                              ),
+                            ),
+                        ],
                       ),
                     ],
                   ),
-
-                  const SizedBox(height: 12),
-
-                  Divider(
-                    color: lightGreen.withValues(alpha: 0.2),
-                    height: 1,
-                  ),
-
-                  const SizedBox(height: 5),
-
-                  // Edit and Delete buttons
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      if (widget.onEdit != null)
-                        TextButton.icon(
-                          onPressed: widget.onEdit,
-                          icon: const Icon(
-                            Icons.edit_outlined,
-                            size: 18,
-                          ),
-                          label: const Text('Edit'),
-                          style: TextButton.styleFrom(
-                            foregroundColor: lightGreen,
-                          ),
-                        ),
-
-                      if (widget.onDelete != null)
-                        TextButton.icon(
-                          onPressed: widget.onDelete,
-                          icon: const Icon(
-                            Icons.delete_outline,
-                            size: 18,
-                          ),
-                          label: const Text('Delete'),
-                          style: TextButton.styleFrom(
-                            foregroundColor: Colors.redAccent,
-                          ),
-                        ),
-                    ],
-                  ),
-                ],
-              ),
+                );
+              },
             ),
           ),
         ),

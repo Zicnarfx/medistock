@@ -23,10 +23,74 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
 
   String searchQuery = '';
 
+  String sortOption = 'Name (A–Z)';
+
+  final List<String> sortOptions = [
+  'Name (A–Z)',
+  'Name (Z–A)',
+  'Quantity (Low to High)',
+  'Quantity (High to Low)',
+  'Price (Low to High)',
+  'Price (High to Low)',
+  'Expiration (Earliest First)',
+  'Expiration (Latest First)',
+  'Low Stock',
+  'About to Expire',
+  'Analgesic',
+  'Antibiotic',
+  'Antihistamine',
+  'Vitamins',
+  'Skin Care',
+  'Digestive',
+  'Other',
+];
+
   @override
   void dispose() {
     searchController.dispose();
     super.dispose();
+  }
+
+  // SORT MEDICINES
+  void sortMedicines(List<Medicine> medicines) {
+    medicines.sort((a, b) {
+      switch (sortOption) {
+        case 'Name (A–Z)':
+          return a.name.toLowerCase().compareTo(
+                b.name.toLowerCase(),
+              );
+
+        case 'Name (Z–A)':
+          return b.name.toLowerCase().compareTo(
+                a.name.toLowerCase(),
+              );
+
+        case 'Quantity (Low to High)':
+          return a.quantity.compareTo(b.quantity);
+
+        case 'Quantity (High to Low)':
+          return b.quantity.compareTo(a.quantity);
+
+        case 'Price (Low to High)':
+          return a.price.compareTo(b.price);
+
+        case 'Price (High to Low)':
+          return b.price.compareTo(a.price);
+
+        case 'Expiration (Earliest First)':
+          return a.expirationDate.compareTo(
+            b.expirationDate,
+          );
+
+        case 'Expiration (Latest First)':
+          return b.expirationDate.compareTo(
+            a.expirationDate,
+          );
+
+        default:
+          return 0;
+      }
+    });
   }
 
   void openAddMedicine() {
@@ -60,7 +124,7 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
     );
   }
 
-  // Themed popup dialog
+  // THEMED POPUP DIALOG
   Future<void> showMessageDialog({
     required String title,
     required String message,
@@ -116,6 +180,7 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
     );
   }
 
+  // DELETE MEDICINE
   Future<void> deleteMedicine(Medicine medicine) async {
     final confirm = await showDialog<bool>(
       context: context,
@@ -201,6 +266,7 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+
     final isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
 
@@ -237,7 +303,7 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
 
       body: Column(
         children: [
-          // Search field
+          // SEARCH FIELD
           Padding(
             padding: EdgeInsets.fromLTRB(
               horizontalPadding,
@@ -269,6 +335,7 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
                         ),
                         onPressed: () {
                           searchController.clear();
+
                           setState(() {
                             searchQuery = '';
                           });
@@ -301,7 +368,86 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
             ),
           ),
 
-          // Medicine list
+          // SORT DROPDOWN
+          Padding(
+            padding: EdgeInsets.fromLTRB(
+              horizontalPadding,
+              0,
+              horizontalPadding,
+              12,
+            ),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.sort_rounded,
+                  color: darkGreen,
+                  size: 22,
+                ),
+
+                const SizedBox(width: 10),
+
+                const Text(
+                  'Sort by:',
+                  style: TextStyle(
+                    color: darkGreen,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+
+                const SizedBox(width: 12),
+
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      color: darkGreen,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: primaryGreen,
+                        width: 1.2,
+                      ),
+                    ),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        value: sortOption,
+                        isExpanded: true,
+                        dropdownColor: darkGreen,
+                        icon: const Icon(
+                          Icons.keyboard_arrow_down_rounded,
+                          color: lightGreen,
+                        ),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                        ),
+                        items: sortOptions.map((option) {
+                          return DropdownMenuItem<String>(
+                            value: option,
+                            child: Text(
+                              option,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          if (value != null) {
+                            setState(() {
+                              sortOption = value;
+                            });
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // MEDICINE LIST
           Expanded(
             child: StreamBuilder<List<Medicine>>(
               stream: service.getMedicines(),
@@ -332,8 +478,8 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
 
                 final medicines = snapshot.data ?? [];
 
-                final filteredMedicines =
-                    medicines.where((medicine) {
+                // SEARCH FILTER
+                final filteredMedicines = medicines.where((medicine) {
                   return medicine.name
                           .toLowerCase()
                           .contains(searchQuery) ||
@@ -342,6 +488,10 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
                           .contains(searchQuery);
                 }).toList();
 
+                // APPLY SORTING
+                sortMedicines(filteredMedicines);
+
+                // EMPTY STATE
                 if (filteredMedicines.isEmpty) {
                   return Center(
                     child: Column(
@@ -352,7 +502,9 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
                           size: 75,
                           color: darkGreen.withValues(alpha: 0.35),
                         ),
+
                         const SizedBox(height: 15),
+
                         Text(
                           searchQuery.isEmpty
                               ? 'No medicines available'
@@ -363,7 +515,9 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
                             fontWeight: FontWeight.w600,
                           ),
                         ),
+
                         const SizedBox(height: 6),
+
                         const Text(
                           'Add a medicine to get started.',
                           style: TextStyle(
@@ -375,15 +529,12 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
                   );
                 }
 
-                // Responsive layout:
-                // Desktop: grid
-                // Mobile: list
+                // RESPONSIVE LAYOUT
                 final useGrid = screenWidth >= 700;
 
                 if (useGrid) {
-                  final crossAxisCount = screenWidth >= 1100
-                      ? 3
-                      : 2;
+                  final crossAxisCount =
+                      screenWidth >= 1100 ? 3 : 2;
 
                   return GridView.builder(
                     padding: EdgeInsets.fromLTRB(
@@ -398,12 +549,10 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
                       crossAxisCount: crossAxisCount,
                       crossAxisSpacing: 16,
                       mainAxisSpacing: 16,
-                      childAspectRatio:
-                          isLandscape ? 1.8 : 1.35,
+                      childAspectRatio: isLandscape ? 1.3 : 1.15,
                     ),
                     itemBuilder: (context, index) {
-                      final medicine =
-                          filteredMedicines[index];
+                      final medicine = filteredMedicines[index];
 
                       return _HoverMedicineItem(
                         child: MedicineCard(
@@ -423,6 +572,7 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
                   );
                 }
 
+                // MOBILE LIST VIEW
                 return ListView.builder(
                   padding: EdgeInsets.fromLTRB(
                     horizontalPadding,
@@ -456,6 +606,7 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
         ],
       ),
 
+      // ADD MEDICINE BUTTON
       floatingActionButton: FloatingActionButton.extended(
         onPressed: openAddMedicine,
         backgroundColor: primaryGreen,
@@ -473,7 +624,7 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
   }
 }
 
-// Hover animation for desktop and web
+// HOVER ANIMATION FOR DESKTOP AND WEB
 class _HoverMedicineItem extends StatefulWidget {
   final Widget child;
 

@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'firebase_options.dart';
 import 'screens/login_screen.dart';
-import 'screens/dashboard_screen.dart';
+import 'screens/navbar.dart';
 import 'app_colors.dart';
 
 Future<void> main() async {
@@ -26,17 +26,22 @@ class MediStockApp extends StatelessWidget {
     return MaterialApp(
       title: 'MediStock',
       debugShowCheckedModeBanner: false,
+
       theme: ThemeData(
         useMaterial3: true,
+
         colorScheme: ColorScheme.fromSeed(
           seedColor: primaryGreen,
         ),
+
         scaffoldBackgroundColor: backgroundGreen,
+
         appBarTheme: const AppBarTheme(
           backgroundColor: primaryGreen,
           foregroundColor: Colors.white,
         ),
       ),
+
       home: const AuthGate(),
     );
   }
@@ -49,7 +54,9 @@ class AuthGate extends StatelessWidget {
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
+
       builder: (context, snapshot) {
+
         if (snapshot.connectionState ==
             ConnectionState.waiting) {
           return const Scaffold(
@@ -59,10 +66,12 @@ class AuthGate extends StatelessWidget {
           );
         }
 
+        // USER IS LOGGED IN
         if (snapshot.hasData) {
-          return const DashboardScreen();
+          return const MainNavigationScreen();
         }
 
+        // USER IS NOT LOGGED IN
         return const LoginScreen();
       },
     );

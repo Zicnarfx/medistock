@@ -152,16 +152,19 @@ class MedicineDetailsScreen extends StatelessWidget {
             title: 'Category',
             value: medicine.category,
           ),
+
           detailCard(
             icon: Icons.inventory_2_outlined,
             title: 'Quantity',
             value: '${medicine.quantity} ${medicine.unit}',
           ),
+
           detailCard(
             icon: Icons.payments_outlined,
             title: 'Price',
             value: '₱${medicine.price.toStringAsFixed(2)}',
           ),
+
           detailCard(
             icon: Icons.calendar_month_outlined,
             title: 'Expiration Date',
@@ -170,6 +173,7 @@ class MedicineDetailsScreen extends StatelessWidget {
                 '${medicine.expirationDate.year}',
             valueColor: expired ? Colors.redAccent : lightGreen,
           ),
+
           detailCard(
             icon: Icons.business_outlined,
             title: 'Supplier',
@@ -177,6 +181,7 @@ class MedicineDetailsScreen extends StatelessWidget {
                 ? 'Not specified'
                 : medicine.supplier,
           ),
+
           detailCard(
             icon: Icons.description_outlined,
             title: 'Description',
@@ -213,7 +218,7 @@ class MedicineDetailsScreen extends StatelessWidget {
 
           const SizedBox(height: 12),
 
-          // Dark Green Delete Button
+          // Delete Button
           SizedBox(
             height: 54,
             child: ElevatedButton.icon(
@@ -260,6 +265,7 @@ class MedicineDetailsScreen extends StatelessWidget {
   }
 
   // Medicine Information Card
+  // Uses Row and Column instead of ListTile.
   Widget detailCard({
     required IconData icon,
     required String title,
@@ -276,37 +282,55 @@ class MedicineDetailsScreen extends StatelessWidget {
           color: primaryGreen.withValues(alpha: 0.3),
         ),
       ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
           horizontal: 16,
-          vertical: 7,
+          vertical: 16,
         ),
-        leading: Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: primaryGreen.withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Icon(
-            icon,
-            color: lightGreen,
-            size: 23,
-          ),
-        ),
-        title: Text(
-          title,
-          style: const TextStyle(
-            color: Colors.white70,
-            fontSize: 12,
-          ),
-        ),
-        subtitle: Text(
-          value,
-          style: TextStyle(
-            color: valueColor ?? Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 15,
-          ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: primaryGreen.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                icon,
+                color: lightGreen,
+                size: 23,
+              ),
+            ),
+
+            const SizedBox(width: 15),
+
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 12,
+                    ),
+                  ),
+
+                  const SizedBox(height: 5),
+
+                  Text(
+                    value,
+                    style: TextStyle(
+                      color: valueColor ?? Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

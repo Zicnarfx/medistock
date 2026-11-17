@@ -568,6 +568,8 @@ class _AccountSettingsScreenState
   }
 
   // SETTINGS CARD
+  
+  // SETTINGS CARD
   Widget settingsCard({
     required IconData icon,
     required String title,
@@ -592,40 +594,45 @@ class _AccountSettingsScreenState
             ),
           ],
         ),
-        child: ListTile(
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 18,
-            vertical: 8,
-          ),
-          leading: Container(
-            height: 43,
-            width: 43,
-            decoration: BoxDecoration(
-              color: primaryGreen.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(12),
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(16),
+          clipBehavior: Clip.antiAlias,
+          child: ListTile(
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 18,
+              vertical: 8,
             ),
-            child: Icon(icon, color: lightGreen),
-          ),
-          title: Text(
-            title,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          subtitle: Text(
-            subtitle,
-            style: const TextStyle(
-              color: Colors.white70,
-              fontSize: 12,
-            ),
-          ),
-          trailing: trailing ??
-              const Icon(
-                Icons.chevron_right,
-                color: lightGreen,
+            leading: Container(
+              height: 43,
+              width: 43,
+              decoration: BoxDecoration(
+                color: primaryGreen.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(12),
               ),
-          onTap: onTap,
+              child: Icon(icon, color: lightGreen),
+            ),
+            title: Text(
+              title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            subtitle: Text(
+              subtitle,
+              style: const TextStyle(
+                color: Colors.white70,
+                fontSize: 12,
+              ),
+            ),
+            trailing: trailing ??
+                const Icon(
+                  Icons.chevron_right,
+                  color: lightGreen,
+                ),
+            onTap: onTap,
+          ),
         ),
       ),
     );
@@ -662,11 +669,7 @@ class _AccountSettingsScreenState
           ),
           child: ElevatedButton.icon(
             onPressed: logout,
-            icon: const Icon(
-              Icons.logout_rounded,
-              color: lightGreen,
-              size: 21,
-            ),
+          
             label: const Text(
               'LOG OUT',
               style: TextStyle(
